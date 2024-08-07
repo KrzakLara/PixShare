@@ -1,0 +1,104 @@
+﻿
+@model PixShareLIB.Models.User
+@{
+    ViewBag.Title = "Login";
+}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        background-color: #FFB6C1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .centered-box {
+        width: 350px;
+        height: auto;
+        background-color: #fff;
+        border: 1px solid #e1e1e1;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #e1e1e1;
+        border-radius: 5px;
+        background-color: #fafafa;
+    }
+
+    input[type="submit"], .btn {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+
+    .login-button {
+        background-color: #3498db;
+    }
+
+        .login-button:hover {
+            background-color: #2980b9;
+        }
+
+    .register-button {
+        background-color: #ff69b4;
+    }
+
+        .register-button:hover {
+            background-color: #ff1493;
+        }
+
+    .anonymous-button {
+        background-color: #e74c3c;
+    }
+
+        .anonymous-button:hover {
+            background-color: #c0392b;
+        }
+
+    .text-danger {
+        color: #e74c3c;
+        text-align: center;
+    }
+</style>
+
+
+<div class="centered-box">
+    <img src="~/Assets/PicShare3.png" />
+    <h1>PixShare</h1>
+    @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { @class = "login-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.LabelFor(model => model.Email)
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+
+        @Html.LabelFor(model => model.Password)
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+
+        <input type="submit" value="Login" class="login-button" />
+        <input type="button" value="Register" class="register-button" onclick="location.href='@Url.Action("Registration", "Home")'" />
+        <input type="button" value="Anonymous" class="anonymous-button" onclick="location.href='@Url.Action("HomeScreen", "Home")'" />
+    }
+</div>

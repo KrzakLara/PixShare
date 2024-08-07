@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "UploadSuccess";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Add your styles here if needed -->
+</head>
+<body>
+    <h3>Upload Successful!</h3>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ImagePath))
+    {
+        <img src="@Url.Content(ViewBag.ImagePath)" alt="Uploaded Image" />
+    }
+
+    <br />
+    <br />
+    <a href="@Url.Action("HomeScreen", "Home")" class="upload-button">Back to HomeScreen</a>
+</body>
+</html>

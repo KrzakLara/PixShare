@@ -1,0 +1,35 @@
+﻿@model IEnumerable<PixShareLIB.Models.User>
+
+@{
+    ViewBag.Title = "User Management";
+}
+
+<div class="container">
+    <h2>User Management</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Package</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Username</td>
+                    <td>@user.Email</td>
+                    <td>@user.UserType</td>
+                    <td>@user.PackageType</td>
+                    <td>
+                        <a href="@Url.Action("EditUser", "Admin", new { id = user.IDUser })" class="btn btn-primary">Edit</a>
+                        <a href="@Url.Action("ManageImages", "Admin", new { userId = user.IDUser })" class="btn btn-info">Images</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

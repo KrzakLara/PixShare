@@ -1,0 +1,93 @@
+﻿@model List<PixShareLIB.Models.IPost>
+
+@{
+    ViewBag.Title = "Manage Images";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #FFC0CB;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #000;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .photos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .photo {
+            margin: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+            color: black;
+            position: relative;
+            width: 150px;
+            height: auto;
+        }
+
+            .photo img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .btn:hover {
+                background-color: #45a049;
+            }
+
+        .delete-button {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .delete-button:hover {
+                background-color: #FF1493;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Images @ViewBag.UserId</h2>
+        <div class="photos">
+            @foreach (var post in Model)
+            {
+                <div class="photo">
+                    <img src="@post.ImagePath" alt="Post" />
+                    <p>@post.Description</p>
+                    <p>@post.Hashtags</p>
+                    <button class="delete-button" onclick="location.href='@Url.Action("DeleteImage", new { id = post.IDPost })'">Delete</button>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

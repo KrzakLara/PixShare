@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Packages";
+}
+
+<h1><center>Packages:</center></h1>
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        background-color: #FFB6C1; /* Baby Pink */
+        display: flex;
+        justify-content: center; /* Centrira sadržaj horizontalno */
+        align-items: flex-start; /* Početak sadržaja po vertikali */
+    }
+
+    .package-container {
+        text-align: center;
+        padding: 10px;
+        background-color: #fff; /* Bijela pozadina za svaki paket */
+        border: 1px solid #e1e1e1;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        margin: 10px; /* Dodao razmak između paketa */
+        max-width: 300px; /* Ograničio širinu svakog paketa */
+    }
+
+    h3 {
+        font-size: 24px;
+    }
+</style>
+
+<div style="display: flex; justify-content: space-between; background-color: #FFB6C1; padding: 10px;">
+    <div style="flex: 1; text-align: center; padding: 10px; background-color: #fff; border: 1px solid #e1e1e1; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">
+        <h3>FREE</h3>
+        <form action="RegisterUser" method="post">
+            <input type="hidden" name="UserType" value="FREE">
+            <p>Basic Features</p>
+            <p>Upload Size: 1 GB</p>
+            <p>Daily Upload Limit: 10 photos</p>
+            <p>Maximum Photo Consumption: 100 MB</p>
+            <p><h2>Price: FREE</h2></p>
+        </form>
+    </div>
+    <div style="flex: 1; text-align: center; padding: 10px; background-color: #fff; border: 1px solid #e1e1e1; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">
+        <h3>PRO</h3>
+        <form action="RegisterUser" method="post">
+            <input type="hidden" name="UserType" value="PRO">
+            <p>Faster Platform Access</p>
+            <p>Access to Premium Content</p>
+            <p>Upload Size: 5 GB</p>
+            <p>Daily Upload Limit: 50 photos</p>
+            <p>Maximum Photo Consumption: 500 MB</p>
+            <p><h2>Price: &euro;80</h2></p>
+        </form>
+    </div>
+    <div style="flex: 1; text-align: center; padding: 10px; background-color: #fff; border: 1px solid #e1e1e1; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">
+        <h3>GOLD</h3>
+        <form action="RegisterUser" method="post">
+            <input type="hidden" name="UserType" value="GOLD">
+            <p>Faster Platform Access</p>
+            <p>Full Access to Premium Content</p>
+            <p>Advanced Photo Organization Features</p>
+            <p>Upload Size: 10 GB</p>
+            <p>Daily Upload Limit: 100 photos</p>
+            <p>Maximum Photo Consumption: 1 GB</p>
+            <p>Priority Customer Support</p>
+            <p><h2>Price: &euro;150</h2></p>
+        </form>
+    </div>
+</div>
+<button onclick="location.href='@Url.Action("Registration", "Home")'" class="btn btn-primary">Return</button>
+

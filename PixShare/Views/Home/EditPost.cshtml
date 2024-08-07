@@ -1,0 +1,102 @@
+﻿@model PixShareLIB.Models.Post
+
+@{
+    ViewBag.Title = "Edit Post";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #FFB6C1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .centered-box {
+            width: 350px;
+            height: auto;
+            background-color: #fff;
+            border: 1px solid #e1e1e1;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e1e1;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        input[type="submit"], .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .save-button {
+            background-color: #ff69b4;
+        }
+
+            .save-button:hover {
+                background-color: #ff1493;
+            }
+
+        .home-button {
+            background-color: #4CAF50;
+        }
+
+            .home-button:hover {
+                background-color: #45a049;
+            }
+
+        .text-danger {
+            color: #e74c3c;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="centered-box">
+        <h1>Edit Post</h1>
+        @using (Html.BeginForm("SavePhoto", "Home", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.IDPost)
+
+            <div>
+                @Html.LabelFor(model => model.Description)
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+
+            <div>
+                @Html.LabelFor(model => model.Hashtags)
+                @Html.TextBoxFor(model => model.Hashtags, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Hashtags, "", new { @class = "text-danger" })
+            </div>
+
+            <input type="submit" value="Save" class="save-button" />
+        }
+        <input type="button" value="Return to Home" class="home-button" onclick="location.href='@Url.Action("Index", "Home")'" />
+    </div>
+</body>
+</html>

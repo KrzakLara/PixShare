@@ -1,0 +1,144 @@
+﻿@model List<PixShareLIB.Models.IPost>
+
+@{
+    ViewBag.Title = "HomeScreen";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #FFB6C1;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+            .sidebar a {
+                padding: 15px 25px;
+                text-decoration: none;
+                font-size: 18px;
+                color: white;
+                display: block;
+                transition: 0.3s;
+            }
+
+                .sidebar a:hover {
+                    background-color: #555;
+                }
+
+        body {
+            background-color: #FFFFFF;
+            color: white;
+            margin: 0;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        .photos {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .photo {
+            margin: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+            color: black;
+            width: 150px; /* Adjust as necessary */
+        }
+
+            .photo img {
+                max-width: 100%;
+                height: auto;
+                cursor: pointer;
+            }
+
+        .upload-button {
+            display: block;
+            width: 200px;
+            margin: 50px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            .upload-button:hover {
+                background-color: #45a049;
+            }
+
+        .edit-button {
+            display: block;
+            padding: 5px 10px;
+            background-color: #FF69B4;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+            .edit-button:hover {
+                background-color: #FF1493;
+            }
+    </style>
+    <script>
+        function redirectToShowPhoto(postId) {
+            window.location.href = '/Home/ShowPhoto/' + postId;
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="~/Assets/PicShare3.png" />
+        <h1>PixShare</h1>
+        @if (Session["UserID"] != null)
+        {
+            <a href="@Url.Action("HomeScreen", "Home")">Home</a>
+            <a href="@Url.Action("Search", "Home")">Search</a>
+            <a href="@Url.Action("PackageConsumption", "Home")">Package consumption</a>
+            <a href="@Url.Action("Explore", "Home")">Explore</a>
+            <a href="@Url.Action("Logout", "Home")">Logout</a>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", "Login")">Login</a>
+            <a href="@Url.Action("Registration", "Home")">Register</a>
+        }
+    </div>
+    <div class="content">
+        <div class="photos">
+            @foreach (var post in Model)
+            {
+                <div class="photo" onclick="redirectToShowPhoto(@post.IDPost)">
+                    <img src="@post.ImagePath" alt="Post" />
+                    <p>@post.Description</p>
+                    <p>Author: @post.Username</p>
+                    <p>Upload Date: @post.Date</p>
+                    <p>@post.Hashtags</p>
+                    @if (Session["UserID"] != null)
+                    {
+                        <a href="@Url.Action("EditPost", "Home", new { id = post.IDPost })" class="edit-button">Edit</a>
+                    }
+                </div>
+            }
+        </div>
+        @if (Session["UserID"] != null)
+        {
+            <a href="@Url.Action("UploadPhoto", "Home")" class="upload-button">Upload Post</a>
+        }
+    </div>
+</body>
+</html>

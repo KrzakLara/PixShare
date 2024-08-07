@@ -1,0 +1,95 @@
+﻿@model PixShareLIB.Models.User
+
+@{
+    ViewBag.Title = "Registration";
+}
+
+<style>
+    body {
+        height: 100vh;
+        margin: 0;
+        background-color: #FFB6C1; /* Baby Pink */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .registration-container {
+        width: 400px;
+        background-color: #fff;
+        border: 1px solid #e1e1e1;
+        text-align: center;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<div class="registration-container">
+    <center>
+        <h2>Registration form</h2>
+
+        @using (Html.BeginForm("Index", "Registration", FormMethod.Post, new { @class = "form-group" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                <div class="form-group">
+                    <b>@Html.LabelFor(model => model.Username, htmlAttributes: new { @class = "control-label col-md-2" })</b>
+                    <div class="col-md-10">
+                        <b>@Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })</b>
+                        <b>@Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })</b>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <b>@Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })</b>
+                    <div class="col-md-10">
+                        <b>@Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", type = "password" } })</b>
+                        <b>@Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })</b>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <b>@Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })</b>
+                    <div class="col-md-10">
+                        <b>@Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })</b>
+                        <b>@Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })</b>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <b>@Html.Label("Package:", htmlAttributes: new { @class = "control-label col-md-2" })</b>
+                    <div class="col-md-10">
+                        <b>
+                            @Html.DropDownListFor(model => model.PackageType, new SelectList(new List<string>
+                            {
+                                "FREE", "PRO", "GOLD"
+                            }), new { @class = "form-control" })
+                        </b>
+                        <b>@Html.ValidationMessageFor(model => model.PackageType, "", new { @class = "text-danger" })</b>
+                    </div>
+                </div>
+
+                <input type="submit" value="Save" class="btn btn-secondary" />
+
+                <!-- View Packages Button -->
+                <div class="form-group">
+                    @Html.ActionLink("View packages", "Packages", "Home", null, new { @class = "btn btn-secondary" })
+                </div>
+
+                <!-- Return to Login Page Button -->
+                <div class="form-group">
+                    @Html.ActionLink("Return to the login page", "Index", "Login", null, new { @class = "btn btn-secondary" })
+                </div>
+            </div>
+        }
+    </center>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-3.6.0.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}

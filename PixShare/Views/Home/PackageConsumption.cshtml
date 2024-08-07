@@ -1,0 +1,108 @@
+﻿@model PixShareLIB.Models.User
+
+@{
+    ViewBag.Title = "Package Consumption";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <style>
+        .container {
+            background-color: #F8C8DC; /* Baby pink color */
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+            margin: auto;
+            text-align: center;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F0F0F0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        p, label {
+            color: #555;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input[type="submit"], .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+            input[type="submit"]:hover, .btn:hover {
+                background-color: #45a049;
+            }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .btn-return {
+            background-color: #007BFF;
+        }
+
+            .btn-return:hover {
+                background-color: #0056b3;
+            }
+
+        .error-message {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>@Model.Username's Package Consumption</h2>
+        <p>Current Package: @Model.CurrentPackageState.PackageName</p>
+        <p>Upload Size Limit: @Model.CurrentPackageState.UploadSizeLimit GB</p>
+        <p>Daily Upload Limit: @Model.CurrentPackageState.DailyUploadLimit photos</p>
+        <p>Max Photo Consumption: @Model.CurrentPackageState.MaxPhotoConsumption MB</p>
+        <p>Last Package Change: @Model.LastPackageChangeDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <p class="error-message">@TempData["ErrorMessage"]</p>
+        }
+
+        @if (Model.CurrentPackageState.CanChangePackage(Model))
+        {
+            <form method="post" action="@Url.Action("ChangePackage", "Home")">
+                <label for="packageType">Change Package:</label>
+                <select name="packageType">
+                    <option value="FREE">FREE</option>
+                    <option value="PRO">PRO</option>
+                    <option value="GOLD">GOLD</option>
+                </select>
+                <input type="submit" value="Change Package" />
+            </form>
+        }
+        else
+        {
+            <p>You can change your package again after 24 hours from the last change.</p>
+        }
+
+        <button class="btn btn-return" onclick="window.location.href='@Url.Action("Index", "Home")'">Return to Home</button>
+    </div>
+</body>
+</html>

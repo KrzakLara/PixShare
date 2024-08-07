@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixShare", "PixShare\PixShare.csproj", "{5801C9DC-96A7-45C7-A337-78DBCD27AA4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS_LIB", "PixShareLIB\PS_LIB.csproj", "{67C531E1-B976-4191-AC6C-22BC54D46D60}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5801C9DC-96A7-45C7-A337-78DBCD27AA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5801C9DC-96A7-45C7-A337-78DBCD27AA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5801C9DC-96A7-45C7-A337-78DBCD27AA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5801C9DC-96A7-45C7-A337-78DBCD27AA4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67C531E1-B976-4191-AC6C-22BC54D46D60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67C531E1-B976-4191-AC6C-22BC54D46D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67C531E1-B976-4191-AC6C-22BC54D46D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67C531E1-B976-4191-AC6C-22BC54D46D60}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8713163-192B-49E6-99E7-149912834583}
+	EndGlobalSection
+EndGlobal

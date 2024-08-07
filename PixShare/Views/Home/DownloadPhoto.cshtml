@@ -1,0 +1,116 @@
+﻿@model PixShareLIB.Builder.DownloadPhotoViewModel
+
+@{
+    ViewBag.Title = "Download Photo";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <style>
+        body {
+            background-color: #FFC0CB; /* Pink background */
+            font-family: Arial, sans-serif;
+        }
+
+        .download-container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #FFFFFF; /* White background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #000; /* Box shadow for depth */
+            margin-top: 50px;
+            text-align: center;
+        }
+
+            .download-container h2 {
+                color: #FF69B4; /* Hot Pink for the heading */
+            }
+
+            .download-container label {
+                color: #FF69B4; /* Hot Pink for labels */
+                font-weight: bold;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .download-container input[type="text"],
+            .download-container input[type="checkbox"],
+            .download-container select {
+                width: 80%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .download-container button {
+                padding: 10px 20px;
+                background-color: #FF69B4; /* Hot Pink button */
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .download-container button:hover {
+                    background-color: #FF1493; /* Darker Hot Pink on hover */
+                }
+
+            .download-container input[type="checkbox"] {
+                width: auto;
+                margin-right: 10px;
+            }
+
+            .download-container .checkbox-label {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 10px 0;
+            }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <h2>Download Photo</h2>
+
+        @using (Html.BeginForm())
+        {
+            @Html.HiddenFor(m => m.PostId)
+
+            <div class="checkbox-label">
+                @Html.CheckBoxFor(m => m.ApplyResize)
+                <label for="ApplyResize">Resize:</label>
+            </div>
+            <div>
+                <label for="Width">Width:</label>
+                @Html.TextBoxFor(m => m.Width, new { type = "text", placeholder = "Enter Width" })
+            </div>
+            <div>
+                <label for="Height">Height:</label>
+                @Html.TextBoxFor(m => m.Height, new { type = "text", placeholder = "Enter Height" })
+            </div>
+
+            <div class="checkbox-label">
+                @Html.CheckBoxFor(m => m.ApplySepia)
+                <label for="ApplySepia">Apply Sepia:</label>
+            </div>
+
+            <div class="checkbox-label">
+                @Html.CheckBoxFor(m => m.ApplyBlur)
+                <label for="ApplyBlur">Apply Blur:</label>
+            </div>
+
+            <div>
+                <label for="Format">Format:</label>
+                @Html.DropDownListFor(m => m.Format, (SelectList)ViewBag.FormatOptions)
+            </div>
+
+            <button type="submit">Download</button>
+        }
+    </div>
+</body>
+</html>

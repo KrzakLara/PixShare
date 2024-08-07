@@ -1,0 +1,79 @@
+﻿@model List<PixShareLIB.Models.IPost>
+
+@{
+    ViewBag.Title = "Search Results";
+}
+
+<style>
+    body {
+        background-color: #ffc0cb;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #ff69b4;
+    }
+
+    .photo-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .photo-item {
+        width: calc(33.333% - 20px);
+        box-sizing: border-box;
+        border: 2px solid #ff69b4;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+    }
+
+        .photo-item img {
+            max-width: 100%;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .photo-item p {
+            margin: 5px 0;
+            color: #ff69b4;
+        }
+</style>
+
+<div class="container">
+    <h2>Search Results</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="photo-grid">
+            @foreach (var post in Model)
+            {
+                <div class="photo-item">
+                    <a href="@Url.Action("ShowPhoto", "Home", new { id = post.IDPost })">
+                        <img src="@post.ImagePath" alt="Post Image" />
+                    </a>
+                    <p>Description: @post.Description</p>
+                    <p>Username: @post.Username</p>
+                    <p>Upload Date: @post.Date.ToShortDateString()</p>
+                    <p>Hashtags: @post.Hashtags</p>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No results found matching the criteria.</p>
+    }
+</div>

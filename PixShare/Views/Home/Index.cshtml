@@ -13,7 +13,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Updated CSS -->
     <style>
         .sidebar {
             height: 100%;
@@ -63,18 +62,18 @@
             background-color: #fff;
             color: black;
             position: relative;
-            width: 200px; /* Keep width as 200px for good spacing */
+            width: 200px;
             height: auto;
             box-sizing: border-box;
         }
 
             .photo img {
                 width: 100%;
-                height: 180px; /* Shortened height */
+                height: 180px;
                 display: block;
                 margin: 0 auto;
                 border-radius: 5px;
-                margin-bottom: 10px; /* Space between image and text */
+                margin-bottom: 10px;
             }
 
         .upload-button {
@@ -103,7 +102,6 @@
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            text-align: center;
         }
 
             .edit-button:hover {
@@ -120,7 +118,6 @@
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            text-align: center;
         }
 
             .delete-button:hover {
@@ -133,12 +130,11 @@
             background-color: #FF69B4;
             color: white;
             padding: 5px 0;
-            width: 80%; /* Ensure it fits well */
+            width: 80%;
             text-align: center;
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 14px;
         }
 
             .download-button:hover {
@@ -155,7 +151,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <img src="~/Assets/PicShare3.png" />
+        <img src="~/Assets/PicShare3.png" alt="PixShare Logo" />
         <h1>PixShare</h1>
         <a href="@Url.Action("Index", "Home")">Home</a>
         <a href="@Url.Action("Search", "Home")">Search</a>
@@ -167,15 +163,31 @@
             <a href="@Url.Action("ManageImages", "Admin")">Manage images</a>
         }
     </div>
-    <a href="@Url.Action("UploadPhoto", "Home")" class="upload-button">Upload Post</a>
+    <a href="@Url.Action("UploadPost", "Home")" class="upload-button">Upload Post</a>
     <div class="content">
         <div class="photos">
             @foreach (var post in Model)
             {
                 <div class="photo">
-                    <a href="@Url.Action("ShowPhoto", "Home", new { id = post.IDPost })">
-                        <img src="@post.ImagePath" alt="Post" />
-                    </a>
+                    @if (!string.IsNullOrEmpty(post.ThumbnailPath))
+                    {
+                        <a href="@Url.Action("ShowPhoto", "Home", new { id = post.IDPost })">
+                            <img src="@post.ThumbnailPath" alt="Thumbnail">
+                        </a>
+                    }
+                    else if (!string.IsNullOrEmpty(post.ImagePath))
+                    {
+                        <a href="@Url.Action("ShowPhoto", "Home", new { id = post.IDPost })">
+                            <img src="@post.ImagePath" alt="Photo">
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("ShowPhoto", "Home", new { id = post.IDPost })">
+                            <img src="~/Assets/placeholder.png" alt="Placeholder Image">
+                        </a>
+                    }
+
                     <a href="@Url.Action("EditPost", new { id = post.IDPost })" class="edit-button">Edit</a>
                     <a href="@Url.Action("DownloadPhoto", new { id = post.IDPost })" class="download-button">Download</a>
                     @if (isAdmin)
@@ -183,8 +195,8 @@
                         <a href="@Url.Action("DeletePostIndex", new { id = post.IDPost })" class="delete-button">Delete</a>
                     }
                     <p>@post.Description</p>
-                    <p>Author: @post.Username</p> <!-- Changed to Username -->
-                    <p>Upload Date: @post.Date.ToString("dd/MM/yyyy HH:mm:ss")</p> <!-- Add time for clarity -->
+                    <p>Author: @post.Username</p>
+                    <p>Upload Date: @post.Date.ToString("dd/MM/yyyy HH:mm:ss")</p>
                     <p>@post.Hashtags</p>
                 </div>
             }

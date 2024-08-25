@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using PixShareLIB.DAL;
 using PixShareLIB.Models;
@@ -50,9 +52,38 @@ namespace PixShare.Controllers
         }
 
         // Manage Images
-        public ActionResult ManageImages()
+        public ActionResult ManageImages(int userId)
         {
-            var images = _repo.GetAllPosts();
+            // Fetch the user to get the username
+            var user = _repo.GetUserById(userId);
+            if (user == null)
+            {
+                return HttpNotFound("User not found.");
+            }
+
+            // Fetch the last 10 uploaded posts by this user, ordered by date
+            List<IPost> images = _repo.GetAllPosts()
+                .Where(post => post.UserID == userId)
+                .OrderByDescending(post => post.Date)
+                .Take(10)
+                .ToList();
+
+            // Convert image paths to Base64 for display
+            foreach (var image in images)
+            {
+                if (!string.IsNullOrEmpty(image.ThumbnailPath))
+                {
+                    image.ThumbnailPath = ConvertImageToBase64(Server.MapPath(image.ThumbnailPath));
+                }
+                else if (!string.IsNullOrEmpty(image.ImagePath))
+                {
+                    image.ImagePath = ConvertImageToBase64(Server.MapPath(image.ImagePath));
+                }
+            }
+
+            // Pass the username to the view
+            ViewBag.Username = user.Username;
+
             return View(images);
         }
 
@@ -74,11 +105,10 @@ namespace PixShare.Controllers
             if (ModelState.IsValid)
             {
                 _repo.UpdatePost(post);
-                return RedirectToAction("ManageImages");
+                return RedirectToAction("ManageImages", new { userId = post.UserID });
             }
             return View(post);
         }
-
 
         // Delete Post
         [HttpGet]
@@ -90,7 +120,7 @@ namespace PixShare.Controllers
                 return HttpNotFound();
             }
             _repo.DeletePost(id);
-            return RedirectToAction("ManageImages");
+            return RedirectToAction("ManageImages", new { userId = post.UserID });
         }
 
         [HttpGet]
@@ -103,6 +133,18 @@ namespace PixShare.Controllers
             }
             _repo.DeletePost(id);
             return RedirectToAction("Index", "Home");
+        }
+
+        private string ConvertImageToBase64(string imagePath)
+        {
+            if (System.IO.File.Exists(imagePath))
+            {
+                byte[] imageArray = System.IO.File.ReadAllBytes(imagePath);
+                string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                string extension = System.IO.Path.GetExtension(imagePath).TrimStart('.').ToLower();
+                return $"data:image/{extension};base64,{base64ImageRepresentation}";
+            }
+            return null;
         }
     }
 }

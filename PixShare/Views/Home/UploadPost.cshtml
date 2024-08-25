@@ -1,0 +1,117 @@
+﻿@model PixShareLIB.Models.Post
+
+@{
+    ViewBag.Title = "Upload Post";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #FFC0CB; /* Pink background */
+            font-family: Arial, sans-serif;
+        }
+
+        .upload-container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #FFFFFF; /* White background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #000;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+            .upload-container h2 {
+                color: #FF69B4; /* Hot Pink */
+            }
+
+            .upload-container label {
+                color: #FF69B4; /* Hot Pink */
+                font-weight: bold;
+            }
+
+            .upload-container input[type="file"],
+            .upload-container input[type="text"],
+            .upload-container select,
+            .upload-container input[type="number"] {
+                width: 80%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .upload-container button {
+                padding: 10px 20px;
+                background-color: #4CAF50; /* Green */
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .upload-container button:hover {
+                    background-color: #45a049;
+                }
+
+        .return-home {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #00BFFF; /* Deep Sky Blue */
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+            .return-home:hover {
+                background-color: #009ACD; /* Deep Sky Blue Darker */
+            }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h2>Upload Post</h2>
+        @using (Html.BeginForm("UploadPost", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div>
+                <label for="file">Choose an image:</label>
+                <input type="file" name="file" id="file" />
+            </div>
+            <div>
+                <label for="Description">Description:</label>
+                @Html.TextBoxFor(m => m.Description, new { placeholder = "Enter description" })
+            </div>
+            <div>
+                <label for="Hashtags">Hashtags:</label>
+                @Html.TextBoxFor(m => m.Hashtags, new { placeholder = "Enter hashtags" })
+            </div>
+            <div>
+                <label for="processingType">Processing Type:</label>
+                <select name="processingType" id="processingType">
+                    <option value="None">None</option>
+                    <option value="Resize">Resize</option>
+                    <option value="PNG">Convert to PNG</option>
+                    <option value="JPG">Convert to JPG</option>
+                    <option value="BMP">Convert to BMP</option>
+                </select>
+            </div>
+            <div>
+                <label for="width">Width (for Resize):</label>
+                <input type="number" name="width" id="width" />
+            </div>
+            <div>
+                <label for="height">Height (for Resize):</label>
+                <input type="number" name="height" id="height" />
+            </div>
+            <button type="submit">Upload</button>
+        }
+        <a href="@Url.Action("Index", "Home")" class="return-home">Return to Home</a>
+    </div>
+</body>
+</html>

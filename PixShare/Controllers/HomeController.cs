@@ -21,7 +21,7 @@ namespace PixShare.Controllers
     {
         private readonly IRepo _repo;
         private readonly PixShareLIB.ChainOfRespoinibility.IPostService _postService;
-        private readonly UserActions _userActions = new UserActions();
+        private readonly UserActions _userActions;
 
         public HomeController() : this(new DBRepo(), new HttpContextWrapper(System.Web.HttpContext.Current).Session)
         {
@@ -31,6 +31,10 @@ namespace PixShare.Controllers
         {
             _repo = repo;
             _postService = new ChainOfResponsibilityPostService(_repo);
+
+            // Initialize UserActions and attach the logger
+            _userActions = new UserActions();
+            _userActions.Attach(new Logger());
         }
 
         [LoggingAspect]
@@ -38,7 +42,28 @@ namespace PixShare.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            List<IPost> photos = _postService.GetAllPosts().Take(10).ToList();
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View Index", userName);
+
+            // Get the last 10 uploaded photos
+            List<IPost> photos = _postService.GetAllPosts()
+                .OrderByDescending(post => post.Date)
+                .Take(10)
+                .ToList();
+
+            // Convert image paths to Base64
+            foreach (var photo in photos)
+            {
+                if (!string.IsNullOrEmpty(photo.ThumbnailPath))
+                {
+                    photo.ThumbnailPath = ConvertImageToBase64(Server.MapPath(photo.ThumbnailPath));
+                }
+                else if (!string.IsNullOrEmpty(photo.ImagePath))
+                {
+                    photo.ImagePath = ConvertImageToBase64(Server.MapPath(photo.ImagePath));
+                }
+            }
+
             return View(photos);
         }
 
@@ -46,6 +71,9 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult About()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View About", userName);
+
             ViewBag.Message = "Your application description page.";
             return View();
         }
@@ -54,6 +82,9 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult Contact()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View Contact", userName);
+
             ViewBag.Message = "Your contact page.";
             return View();
         }
@@ -62,6 +93,9 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult Logout()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("Logout", userName);
+
             Session.Clear();
             return RedirectToAction("HomeScreen");
         }
@@ -70,6 +104,9 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult Registration()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View Registration", userName);
+
             return View("~/Views/Registration/Index.cshtml");
         }
 
@@ -78,6 +115,9 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult Anonymous()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("Anonymous", userName);
+
             return RedirectToAction("Index");
         }
 
@@ -85,6 +125,9 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult Packages()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View Packages", userName);
+
             return View();
         }
 
@@ -93,7 +136,28 @@ namespace PixShare.Controllers
         [HttpGet]
         public ActionResult HomeScreen()
         {
-            List<IPost> photos = _postService.GetAllPosts().Take(10).ToList();
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View HomeScreen", userName);
+
+            // Get the last 10 uploaded photos
+            List<IPost> photos = _postService.GetAllPosts()
+                .OrderByDescending(post => post.Date)
+                .Take(10)
+                .ToList();
+
+            // Convert image paths to Base64
+            foreach (var photo in photos)
+            {
+                if (!string.IsNullOrEmpty(photo.ThumbnailPath))
+                {
+                    photo.ThumbnailPath = ConvertImageToBase64(Server.MapPath(photo.ThumbnailPath));
+                }
+                else if (!string.IsNullOrEmpty(photo.ImagePath))
+                {
+                    photo.ImagePath = ConvertImageToBase64(Server.MapPath(photo.ImagePath));
+                }
+            }
+
             return View(photos);
         }
 
@@ -101,6 +165,9 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult PackageConsumption()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View PackageConsumption", userName);
+
             if (Session["UserID"] == null)
             {
                 return RedirectToAction("Login", "HomeController");
@@ -120,7 +187,6 @@ namespace PixShare.Controllers
             }
 
             user.TrackConsumption();
-            _userActions.PerformAction("View PackageConsumption", user.Username);
             return View(user);
         }
 
@@ -129,6 +195,9 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult ChangePackage(string packageType)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction($"Change Package to {packageType}", userName);
+
             if (Session["UserID"] == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -137,7 +206,6 @@ namespace PixShare.Controllers
             int userId = (int)Session["UserID"];
             var user = _repo.GetUserById(userId);
 
-            // Check if the user can change the package
             if (!user.CurrentPackageState.CanChangePackage(user))
             {
                 TempData["ErrorMessage"] = "You can change your package again after 24 hours from the last change.";
@@ -159,17 +227,19 @@ namespace PixShare.Controllers
             }
 
             user.SetPackageState(newPackageState);
-            user.LastPackageChangeDate = DateTime.Now; // Update the last package change date
+            user.LastPackageChangeDate = DateTime.Now;
             _repo.UpdateUser(user);
-            _userActions.PerformAction("Change Package to " + packageType, user.Username);
 
             return RedirectToAction("PackageConsumption");
         }
 
         [LoggingAspect]
         [ExceptionHandlingAspect]
-        public ActionResult UploadPhoto()
+        public ActionResult UploadPost()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View UploadPost", userName);
+
             return View();
         }
 
@@ -178,6 +248,8 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult UploadPost(HttpPostedFileBase file, Post photo, string processingType, int? width, int? height)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+
             if (file != null && file.ContentLength > 0)
             {
                 string originalPath = Path.Combine(Server.MapPath("~/UploadedImages"), Path.GetFileName(file.FileName));
@@ -191,10 +263,6 @@ namespace PixShare.Controllers
 
                 file.SaveAs(originalPath);
 
-                // Get file size
-                photo.Size = new FileInfo(originalPath).Length;
-
-                // Process the image based on the user's choice
                 switch (processingType)
                 {
                     case "Resize":
@@ -204,17 +272,21 @@ namespace PixShare.Controllers
                         }
                         break;
                     case "PNG":
-                        ConvertImageFormat(originalPath, thumbnailPath, System.Drawing.Imaging.ImageFormat.Png);
+                        ConvertImageFormat(originalPath, thumbnailPath, ImageFormat.Png);
                         break;
                     case "JPG":
-                        ConvertImageFormat(originalPath, thumbnailPath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        ConvertImageFormat(originalPath, thumbnailPath, ImageFormat.Jpeg);
                         break;
                     case "BMP":
-                        ConvertImageFormat(originalPath, thumbnailPath, System.Drawing.Imaging.ImageFormat.Bmp);
+                        ConvertImageFormat(originalPath, thumbnailPath, ImageFormat.Bmp);
+                        break;
+                    default:
+                        thumbnailPath = originalPath; // If no processing, keep the original image
                         break;
                 }
 
                 photo.ImagePath = "/UploadedImages/" + Path.GetFileName(file.FileName);
+                photo.ThumbnailPath = "/UploadedImages/Thumbnails/" + Path.GetFileName(file.FileName);
                 photo.Date = DateTime.Now;
 
                 if (Session["UserID"] != null)
@@ -230,6 +302,7 @@ namespace PixShare.Controllers
                 try
                 {
                     _repo.AddPost(photo);
+                    _userActions.PerformAction("Upload Photo", userName);
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
@@ -241,52 +314,48 @@ namespace PixShare.Controllers
             return View(photo);
         }
 
+
         private void ResizeImage(string originalImagePath, string outputPath, int width, int height)
         {
-            using (var image = System.Drawing.Image.FromFile(originalImagePath))
+            ProcessImage(originalImagePath, outputPath, (img, outPath) =>
             {
-                var thumbnail = image.GetThumbnailImage(width, height, () => false, IntPtr.Zero);
-                thumbnail.Save(outputPath);
-            }
+                var thumbnail = img.GetThumbnailImage(width, height, () => false, IntPtr.Zero);
+                thumbnail.Save(outPath);
+            });
         }
 
-        private void ConvertImageFormat(string originalImagePath, string outputPath, System.Drawing.Imaging.ImageFormat format)
+        private void ConvertImageFormat(string originalImagePath, string outputPath, ImageFormat format)
+        {
+            ProcessImage(originalImagePath, outputPath, (img, outPath) => img.Save(outPath, format));
+        }
+
+        private void ProcessImage(string originalImagePath, string outputPath, Action<System.Drawing.Image, string> processAction)
         {
             using (var image = System.Drawing.Image.FromFile(originalImagePath))
             {
-                image.Save(outputPath, format);
+                processAction(image, outputPath);
             }
         }
 
-        private void CreateThumbnail(string originalImagePath, string thumbnailPath)
+        private string ConvertImageToBase64(string imagePath)
         {
-            try
+            if (System.IO.File.Exists(imagePath))
             {
-                using (var image = System.Drawing.Image.FromFile(originalImagePath))
-                {
-                    var thumbnail = image.GetThumbnailImage(150, 150, () => false, IntPtr.Zero);
-
-                    // Ensure the directory exists before saving
-                    string directory = Path.GetDirectoryName(thumbnailPath);
-                    if (!Directory.Exists(directory))
-                    {
-                        Directory.CreateDirectory(directory);
-                    }
-
-                    // Save the thumbnail to the correct path
-                    thumbnail.Save(thumbnailPath);
-                }
+                byte[] imageArray = System.IO.File.ReadAllBytes(imagePath);
+                string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                string extension = Path.GetExtension(imagePath).TrimStart('.').ToLower();
+                return $"data:image/{extension};base64,{base64ImageRepresentation}";
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to create thumbnail. " + ex.Message);
-            }
+            return null;
         }
 
         [LoggingAspect]
         [ExceptionHandlingAspect]
         public ActionResult UploadSuccess()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View UploadSuccess", userName);
+
             return View();
         }
 
@@ -294,7 +363,28 @@ namespace PixShare.Controllers
         [ExceptionHandlingAspect]
         public ActionResult Explore()
         {
-            List<IPost> photos = _postService.GetAllPosts();
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View Explore", userName);
+
+            // Get the last 10 uploaded photos
+            List<IPost> photos = _postService.GetAllPosts()
+                .OrderByDescending(post => post.Date)
+                .Take(10)
+                .ToList();
+
+            // Convert image paths to Base64
+            foreach (var photo in photos)
+            {
+                if (!string.IsNullOrEmpty(photo.ThumbnailPath))
+                {
+                    photo.ThumbnailPath = ConvertImageToBase64(Server.MapPath(photo.ThumbnailPath));
+                }
+                else if (!string.IsNullOrEmpty(photo.ImagePath))
+                {
+                    photo.ImagePath = ConvertImageToBase64(Server.MapPath(photo.ImagePath));
+                }
+            }
+
             return View(photos);
         }
 
@@ -303,6 +393,8 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult SavePhoto(Post model)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+
             if (ModelState.IsValid)
             {
                 var photo = _repo.GetPostById(model.IDPost);
@@ -313,17 +405,17 @@ namespace PixShare.Controllers
                     try
                     {
                         _postService.UpdatePost(photo);
-                        return RedirectToAction("Index"); // Redirect to the main view after saving
+                        _userActions.PerformAction("Save Photo", userName);
+                        return RedirectToAction("Index");
                     }
                     catch (UnauthorizedAccessException ex)
                     {
                         ViewBag.ErrorMessage = ex.Message;
-                        return View(model); // Return the same view with the error message
+                        return View(model);
                     }
                 }
             }
-
-            return RedirectToAction("Index"); // Return to Index if model state is invalid
+            return RedirectToAction("Index");
         }
 
         [LoggingAspect]
@@ -331,6 +423,9 @@ namespace PixShare.Controllers
         [HttpGet]
         public ActionResult EditPost(int id)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View EditPost", userName);
+
             var photo = _postService.GetPostById(id);
             if (photo == null)
             {
@@ -344,19 +439,34 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult EditPost(Post photo)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+
+            return ProcessAndHandlePost(photo, p =>
+            {
+                _postService.UpdatePost(p);
+                _userActions.PerformAction("Edit Post", userName);
+                return RedirectToAction("Index");
+            }, ex =>
+            {
+                ViewBag.ErrorMessage = ex.Message;
+                return View(photo);
+            });
+        }
+
+        private ActionResult ProcessAndHandlePost(Post post, Func<Post, ActionResult> successAction, Func<Exception, ActionResult> errorAction)
+        {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _postService.UpdatePost(photo);
-                    return RedirectToAction("Index");
+                    return successAction(post);
                 }
-                catch (UnauthorizedAccessException ex)
+                catch (Exception ex)
                 {
-                    ViewBag.ErrorMessage = ex.Message;
+                    return errorAction(ex);
                 }
             }
-            return View(photo);
+            return RedirectToAction("Index");
         }
 
         [LoggingAspect]
@@ -364,14 +474,25 @@ namespace PixShare.Controllers
         [HttpGet]
         public ActionResult ShowPhoto(int id)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View ShowPhoto", userName);
+
             var post = _postService.GetPostById(id);
             if (post == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.PhotoPath = post.ImagePath;
-            return View();
+            if (string.IsNullOrEmpty(post.ImagePath))
+            {
+                ViewBag.ErrorMessage = "Image path is not available.";
+                return View("Error"); // Or handle this case as needed
+            }
+
+            // Convert image to Base64
+            string base64Image = ConvertImageToBase64(Server.MapPath(post.ImagePath));
+            ViewBag.Base64Image = base64Image; // Pass the Base64 string to the view
+            return View(post);
         }
 
         [LoggingAspect]
@@ -379,6 +500,9 @@ namespace PixShare.Controllers
         [HttpGet]
         public ActionResult Search()
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View Search", userName);
+
             return View();
         }
 
@@ -387,6 +511,9 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult Search(FilterCriteria criteria)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("Search", userName);
+
             var posts = _postService.GetFilteredPosts(criteria);
             return View("SearchResults", posts);
         }
@@ -396,6 +523,9 @@ namespace PixShare.Controllers
         [HttpGet]
         public ActionResult DownloadPhoto(int id)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("View DownloadPhoto", userName);
+
             var model = new DownloadPhotoViewModel
             {
                 PostId = id
@@ -416,13 +546,25 @@ namespace PixShare.Controllers
         [HttpPost]
         public ActionResult DownloadPhoto(DownloadPhotoViewModel model)
         {
+            var userName = Session["Username"]?.ToString() ?? "Unknown User";
+            _userActions.PerformAction("Download Photo", userName);
+
             var post = _postService.GetPostById(model.PostId);
             if (post == null)
             {
                 return HttpNotFound();
             }
 
-            string originalPath = Server.MapPath(post.ImagePath);
+            return TransformAndDownloadPhoto(post.ImagePath, model, (outputPath) =>
+            {
+                byte[] fileBytes = System.IO.File.ReadAllBytes(outputPath);
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(outputPath));
+            });
+        }
+
+        private ActionResult TransformAndDownloadPhoto(string imagePath, DownloadPhotoViewModel model, Func<string, ActionResult> downloadAction)
+        {
+            string originalPath = Server.MapPath(imagePath);
             string outputDirectory = Server.MapPath("~/DownloadedImages");
 
             var builder = new PhotoBuilder(originalPath);
@@ -442,7 +584,6 @@ namespace PixShare.Controllers
                 builder.ApplyBlur();
             }
 
-            // Convert string format to ImageFormat
             ImageFormat imageFormat = ConvertStringToImageFormat(model.Format);
             if (imageFormat != null)
             {
@@ -450,9 +591,7 @@ namespace PixShare.Controllers
             }
 
             string downloadedPath = builder.Save(outputDirectory);
-            byte[] fileBytes = System.IO.File.ReadAllBytes(downloadedPath);
-
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(downloadedPath));
+            return downloadAction(downloadedPath);
         }
 
         private ImageFormat ConvertStringToImageFormat(string format)

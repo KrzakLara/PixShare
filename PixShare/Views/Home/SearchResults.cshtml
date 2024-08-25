@@ -55,18 +55,25 @@
 <div class="container">
     <h2>Search Results</h2>
 
-    @if (Model != null && Model.Any())
+    @if (Model != null && Model.Count > 0)
     {
         <div class="photo-grid">
             @foreach (var post in Model)
             {
                 <div class="photo-item">
                     <a href="@Url.Action("ShowPhoto", "Home", new { id = post.IDPost })">
-                        <img src="@post.ImagePath" alt="Post Image" />
+                        @if (!string.IsNullOrEmpty(post.ThumbnailPath))
+                        {
+                            <img src="@post.ThumbnailPath" alt="Thumbnail" />
+                        }
+                        else
+                        {
+                            <img src="@post.ImagePath" alt="Post Image" />
+                        }
                     </a>
                     <p>Description: @post.Description</p>
-                    <p>Username: @post.Username</p>
-                    <p>Upload Date: @post.Date.ToShortDateString()</p>
+                    <p>Author: @post.Username</p>
+                    <p>Upload Date: @post.Date.ToString("dd/MM/yyyy")</p>
                     <p>Hashtags: @post.Hashtags</p>
                 </div>
             }

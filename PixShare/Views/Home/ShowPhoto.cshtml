@@ -1,4 +1,6 @@
-﻿@{
+﻿@model PixShareLIB.Models.Post
+
+@{
     ViewBag.Title = "Show Photo";
 }
 
@@ -18,11 +20,38 @@
             padding: 10px;
             background-color: #fff;
         }
+
+        .details {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+            .details p {
+                font-size: 18px;
+                color: #333;
+                margin: 5px 0;
+            }
     </style>
 </head>
 <body>
-    <div class="content">
-        <img src="@ViewBag.PhotoPath" alt="Full Photo" />
+    <div class="container body-content">
+        <div class="content">
+            @if (!string.IsNullOrEmpty(ViewBag.Base64Image))
+            {
+                <img src="@ViewBag.Base64Image" alt="Full Photo" />
+            }
+            else
+            {
+                <p>Image not available</p>
+            }
+        </div>
+        <div class="details">
+            <p><strong>Description:</strong> @Model.Description</p>
+            <p><strong>Author:</strong> @Model.Username</p>
+            <p><strong>Upload Date:</strong> @Model.Date.ToString("dd/MM/yyyy HH:mm:ss")</p>
+            <p><strong>Hashtags:</strong> @Model.Hashtags</p>
+        </div>
+        <button class="btn btn-return" onclick="window.location.href='@Url.Action("Index", "Home")'">Return to Home</button>
     </div>
 </body>
 </html>

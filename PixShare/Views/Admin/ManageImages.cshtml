@@ -76,18 +76,29 @@
 </head>
 <body>
     <div class="container">
-        <h2>Manage Images @ViewBag.UserId</h2>
+        <h2>Manage Images for @ViewBag.Username</h2>
         <div class="photos">
             @foreach (var post in Model)
             {
                 <div class="photo">
-                    <img src="@post.ImagePath" alt="Post" />
-                    <p>@post.Description</p>
-                    <p>@post.Hashtags</p>
+                    @if (!string.IsNullOrEmpty(post.ThumbnailPath))
+                    {
+                        <img src="@post.ThumbnailPath" alt="Post Thumbnail" />
+                    }
+                    else
+                    {
+                        <img src="@post.ImagePath" alt="Post Image" />
+                    }
+                    <p><strong>Description:</strong> @post.Description</p>
+                    <p><strong>Hashtags:</strong> @post.Hashtags</p>
+                    <p><strong>Author:</strong> @post.Username</p>
+                    <p><strong>Uploaded:</strong> @post.Date.ToString("dd/MM/yyyy HH:mm:ss")</p>
                     <button class="delete-button" onclick="location.href='@Url.Action("DeleteImage", new { id = post.IDPost })'">Delete</button>
                 </div>
             }
         </div>
+
+        <button class="btn btn-return" onclick="window.location.href='@Url.Action("Index", "Home")'">Return to Home</button>
     </div>
 </body>
 </html>
